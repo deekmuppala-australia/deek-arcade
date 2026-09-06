@@ -3,95 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Base Tycoon</title>
+    <title>Dikshit Arcade</title>
     <style>
         body {
-            background-color: #1a1a2e;
+            margin: 0;
+            background-color: #121824;
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 { color: #e94560; }
-        .stats-box {
-            background: #16213e;
-            padding: 15px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-bottom: 20px;
-            border: 2px solid #0f3460;
-        }
-        button {
-            background-color: #e94560;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { background-color: #ff2e63; transform: scale(1.05); }
-        .base-grid {
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
+            height: 100vh;
+            overflow: hidden;
         }
-        .pillar {
-            background: #0f3460;
-            width: 120px;
-            height: 160px;
-            border-radius: 8px;
+        .sidebar {
+            width: 220px;
+            background-color: #1a2332;
+            border-right: 2px solid #2a3748;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            border: 2px dashed #e94560;
-            font-size: 14px;
+            padding: 20px;
+        }
+        .logo {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.4);
+        }
+        .nav-link {
+            width: 100%;
+            background: #222e42;
+            color: #d1d5db;
+            border: none;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #27ae60;
+            color: white;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+        h1 { margin-top: 0; color: #f39c12; }
+        
+        /* Game Container */
+        .game-container {
+            background: #1f293d;
+            border: 2px solid #374151;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        canvas {
+            background-color: #0b0f19;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            display: block;
+            margin: 15px auto;
+        }
+        .score-board {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>🏰 My Meme Base Tycoon</h1>
-    
-    <div class="stats-box">
-        <p>🪙 Cash: $<span id="cash">100</span></p>
-        <button onclick="buyCharacter()">Buy Character ($50)</button>
+    <div class="sidebar">
+        <div class="logo">🎮 DIKSHIT ARCADE</div>
+        <button class="nav-link active">🏠 Home</button>
+        <button class="nav-link">🔥 Hot Games</button>
+        <button class="nav-link">⭐ Favorites</button>
     </div>
 
-    <h3>Inventory Pillars (Base Slots)</h3>
-    <div class="base-grid" id="baseGrid">
-        <div class="pillar">Empty Slot</div>
-        <div class="pillar">Empty Slot</div>
-        <div class="pillar">Empty Slot</div>
+    <div class="main-content">
+        <h1>Playable Game Zone</h1>
+        
+        <div class="game-container">
+            <h3>🐍 Steal Brainrot - Mini Arena</h3>
+            <div class="score-board">Score: <span id="score">0</span></div>
+            <!-- The actual playable game canvas -->
+            <p style="font-size: 13px; color: #9ca3af; margin-top:0;">Use <b>Left / Right Arrow Keys</b> to catch the floating memes!</p>
+            <canvas id="gameCanvas" width="500" height="350"></canvas>
+        </div>
     </div>
 
     <script>
-        let cash = 100;
-        let charactersCount = 0;
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-        function buyCharacter() {
-            if (cash >= 50) {
-                cash -= 50;
-                charactersCount++;
-                document.getElementById("cash").innerText = cash;
-                
-                // Find slots and fill them
-                let grid = document.getElementById("baseGrid");
-                if(charactersCount <= 3) {
-                    let slots = grid.getElementsByClassName("pillar");
-                    slots[charactersCount - 1].style.border = "2px solid #4ecca3";
-                    slots[charactersCount - 1].style.backgroundColor = "#1b262c";
-                    slots[charactersCount - 1].innerHTML = "<strong>Character #" + charactersCount +</strong><br>⭐ Gen Rate: +$5/s";
-                }
-            } else {
-                alert("Not enough cash! Wait or click more!");
+        let score = 0;
+        
+        // Player object (the basket/character)
+        let player = {
+            x: 210,
+            y: 300,
+            width: 80,
+            height: 20,
+            color: "#e74c3c",
+            speed: 8
+        };
+
+        // Item to catch
+        let item = {
+            x: Math.random() * 460,
+            y: 0,
+            width: 30,
+            height: 30,
+            speed: 3,
+            color: "#f39c12"
+        };
+
+        let keys = {};
+
+        // Listen for keyboard inputs
+        window.addEventListener("keydown", function(e) { keys[e.key] = true; });
+        window.addEventListener("keyup", function(e) { keys[e.key] = false; });
+
+        function update() {
+            // Move player
+            if (keys["ArrowLeft"] && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (keys["ArrowRight"] && player.x < canvas.width - player.width) {
+                player.x += player.speed;
+            }
+
+            // Move item down
+            item.y += item.speed;
+
+            // Check if item hits the bottom
+            if (item.y > canvas.height) {
+                resetItem();
+            }
+
+            // Check for collision with player
+            if (
+                item.x < player.x + player.width &&
+                item.x + item.width > player.x &&
+                item.y + item.height > player.y &&
+                item.y < player.y + player.height
+            ) {
+                score += 10;
+                document.getElementById("score").innerText = score;
+                item.speed += 0.2; // Gets faster as you score more!
+                resetItem();
             }
         }
+
+        function resetItem() {
+            item.y = 0;
+            item.x = Math.random() * (canvas.width - item.width);
+        }
+
+        function draw() {
+            // Clear screen
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw falling item
+            ctx.fillStyle = item.color;
+            ctx.fillRect(item.x, item.y, item.width, item.height);
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // Start game loop
+        loop();
     </script>
 
 </body>
