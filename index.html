@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Base Tycoon</title>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 { color: #e94560; }
+        .stats-box {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 2px solid #0f3460;
+        }
+        button {
+            background-color: #e94560;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #ff2e63; transform: scale(1.05); }
+        .base-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .pillar {
+            background: #0f3460;
+            width: 120px;
+            height: 160px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #e94560;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🏰 My Meme Base Tycoon</h1>
+    
+    <div class="stats-box">
+        <p>🪙 Cash: $<span id="cash">100</span></p>
+        <button onclick="buyCharacter()">Buy Character ($50)</button>
+    </div>
+
+    <h3>Inventory Pillars (Base Slots)</h3>
+    <div class="base-grid" id="baseGrid">
+        <div class="pillar">Empty Slot</div>
+        <div class="pillar">Empty Slot</div>
+        <div class="pillar">Empty Slot</div>
+    </div>
+
+    <script>
+        let cash = 100;
+        let charactersCount = 0;
+
+        function buyCharacter() {
+            if (cash >= 50) {
+                cash -= 50;
+                charactersCount++;
+                document.getElementById("cash").innerText = cash;
+                
+                // Find slots and fill them
+                let grid = document.getElementById("baseGrid");
+                if(charactersCount <= 3) {
+                    let slots = grid.getElementsByClassName("pillar");
+                    slots[charactersCount - 1].style.border = "2px solid #4ecca3";
+                    slots[charactersCount - 1].style.backgroundColor = "#1b262c";
+                    slots[charactersCount - 1].innerHTML = "<strong>Character #" + charactersCount +</strong><br>⭐ Gen Rate: +$5/s";
+                }
+            } else {
+                alert("Not enough cash! Wait or click more!");
+            }
+        }
+    </script>
+
+</body>
+</html>
